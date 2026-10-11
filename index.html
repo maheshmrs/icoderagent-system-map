@@ -1,0 +1,777 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>iCoderAgent System Map</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Public+Sans:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+  /* Layout: a drafting table — layered schematic on the left, detail sheet on the right. */
+  :root {
+    --paper: #f3f0e9;
+    --sheet: #fbf9f5;
+    --ink: #16202b;
+    --ink-soft: #55606d;
+    --rule: #d4cec1;
+    --accent: #0b5d6b;
+    --accent-soft: #d8e7e9;
+    --amber: #a8631a;
+    --risk: #9b3024;
+    --ok: #3d6b3a;
+    --font-display: "Bricolage Grotesque", "Trebuchet MS", sans-serif;
+    --font-body: "Public Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #11171d;
+      --sheet: #182029;
+      --ink: #e6e9ec;
+      --ink-soft: #9aa6b2;
+      --rule: #2c3741;
+      --accent: #5fc6d6;
+      --accent-soft: #1c3038;
+      --amber: #e0a059;
+      --risk: #e8857a;
+      --ok: #8fc98a;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #11171d;
+    --sheet: #182029;
+    --ink: #e6e9ec;
+    --ink-soft: #9aa6b2;
+    --rule: #2c3741;
+    --accent: #5fc6d6;
+    --accent-soft: #1c3038;
+    --amber: #e0a059;
+    --risk: #e8857a;
+    --ok: #8fc98a;
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.6;
+    margin: 0;
+    padding-inline: 20px;
+    padding-block: 0 56px;
+  }
+  .wrap { max-width: 1240px; margin: 0 auto; }
+
+  header.masthead {
+    border-bottom: 2px solid var(--ink);
+    padding-block: 34px 18px;
+    margin-bottom: 26px;
+  }
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 10px;
+  }
+  h1 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(30px, 5.2vw, 52px);
+    line-height: 1.04;
+    letter-spacing: -.02em;
+    margin: 0 0 12px;
+    text-wrap: balance;
+  }
+  .thesis { max-width: 62ch; color: var(--ink-soft); margin: 0 0 22px; font-size: 16px; }
+  .thesis strong { color: var(--ink); font-weight: 600; }
+
+  .facts { display: flex; flex-wrap: wrap; gap: 8px 30px; }
+  .fact { display: flex; flex-direction: column; }
+  .fact b {
+    font-family: var(--font-mono);
+    font-size: 20px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    color: var(--ink);
+  }
+  .fact span { font-size: 11px; letter-spacing: .07em; text-transform: uppercase; color: var(--ink-soft); }
+
+  .hint {
+    font-size: 13px;
+    color: var(--ink-soft);
+    margin: 0 0 20px;
+    padding-left: 12px;
+    border-left: 3px solid var(--amber);
+  }
+
+  .board { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: 26px; align-items: start; }
+  @media (max-width: 920px) { .board { grid-template-columns: 1fr; } }
+
+  .layer { margin-bottom: 22px; }
+  .layer-head {
+    display: flex; align-items: baseline; gap: 10px;
+    font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em;
+    text-transform: uppercase; color: var(--ink-soft);
+    margin-bottom: 9px;
+  }
+  .layer-head::after { content: ""; flex: 1; height: 1px; background: var(--rule); }
+  .nodes { display: flex; flex-wrap: wrap; gap: 7px; }
+
+  button.node {
+    font-family: var(--font-body);
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--ink);
+    background: var(--sheet);
+    border: 1px solid var(--rule);
+    border-left: 3px solid var(--accent);
+    border-radius: 3px;
+    padding: 8px 12px;
+    cursor: pointer;
+    text-align: left;
+    transition: border-color .12s, transform .12s, background .12s;
+  }
+  button.node:hover { border-color: var(--accent); transform: translateX(2px); }
+  button.node:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
+  button.node[aria-pressed="true"] { background: var(--accent-soft); border-left-color: var(--amber); }
+  button.node .tag {
+    display: block; font-family: var(--font-mono); font-size: 10px;
+    font-weight: 400; color: var(--ink-soft); letter-spacing: .04em; margin-top: 2px;
+  }
+
+  .sheet {
+    background: var(--sheet);
+    border: 1px solid var(--rule);
+    border-top: 3px solid var(--accent);
+    border-radius: 3px;
+    padding: 22px;
+    position: sticky;
+    top: env(safe-area-inset-top, 0px);
+    max-height: calc(100vh - 24px);
+    overflow-y: auto;
+    min-width: 0;
+  }
+  @media (max-width: 920px) { .sheet { position: static; max-height: none; } }
+
+  .sheet h2 {
+    font-family: var(--font-display); font-weight: 700;
+    font-size: 25px; line-height: 1.14; letter-spacing: -.015em;
+    margin: 0 0 4px; text-wrap: balance;
+  }
+  .sheet .where {
+    font-family: var(--font-mono); font-size: 11.5px; color: var(--accent);
+    margin: 0 0 16px; word-break: break-word;
+  }
+  .sheet h3 {
+    font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em;
+    text-transform: uppercase; color: var(--ink-soft);
+    margin: 22px 0 8px; padding-bottom: 5px; border-bottom: 1px solid var(--rule);
+  }
+  .sheet p { margin: 0 0 11px; }
+  .sheet ul { margin: 0 0 11px; padding-left: 18px; }
+  .sheet li { margin-bottom: 7px; }
+  code {
+    font-family: var(--font-mono); font-size: .88em;
+    background: var(--accent-soft); color: var(--ink);
+    padding: 1px 5px; border-radius: 2px; word-break: break-word;
+  }
+  .gotcha { border-left: 3px solid var(--risk); padding-left: 11px; margin-bottom: 12px; }
+  .gotcha b { color: var(--risk); font-weight: 600; }
+  .alt { border-left: 3px solid var(--ok); padding-left: 11px; margin-bottom: 12px; }
+  .alt b { color: var(--ok); font-weight: 600; }
+
+  details.q {
+    border: 1px solid var(--rule); border-radius: 3px;
+    padding: 10px 12px; margin-bottom: 8px; background: var(--paper);
+  }
+  details.q summary {
+    cursor: pointer; font-weight: 600; font-size: 14px;
+    list-style: none; display: flex; gap: 9px; align-items: flex-start;
+  }
+  details.q summary::-webkit-details-marker { display: none; }
+  details.q summary::before {
+    content: "Q" counter(qn); counter-increment: qn;
+    font-family: var(--font-mono); font-size: 10px; color: var(--amber);
+    border: 1px solid var(--amber); border-radius: 2px;
+    padding: 1px 4px; flex: none; margin-top: 3px;
+  }
+  .qs { counter-reset: qn; }
+  details.q[open] summary { margin-bottom: 9px; }
+  details.q .ans { font-size: 14px; color: var(--ink-soft); }
+  details.q .ans strong { color: var(--ink); }
+
+  footer.note {
+    margin-top: 34px; padding-top: 16px; border-top: 1px solid var(--rule);
+    font-size: 13px; color: var(--ink-soft); max-width: 68ch;
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="wrap">
+  <header class="masthead">
+    <p class="eyebrow">System map · architecture reference</p>
+    <h1>iCoderAgent</h1>
+    <p class="thesis">A coding agent that runs <strong>on the phone</strong>, not on a server it calls. One Python core is embedded in an iOS app, shelled out to on macOS, bridged into Android, and run plain from a terminal — which is the constraint every other decision bends around.</p>
+    <div class="facts">
+      <div class="fact"><b>17,642</b><span>lines in agent.py</span></div>
+      <div class="fact"><b>57</b><span>agent tools</span></div>
+      <div class="fact"><b>16</b><span>model providers</span></div>
+      <div class="fact"><b>128</b><span>Swift sources</span></div>
+      <div class="fact"><b>0</b><span>third-party Python deps</span></div>
+      <div class="fact"><b>4</b><span>runtimes sharing the core</span></div>
+    </div>
+  </header>
+
+  <p class="hint">Pick any component for its design decisions, the gotchas that bit us, what else we could have used, and three interview questions someone who built it should be able to answer.</p>
+
+  <div class="board">
+    <div id="map"></div>
+    <div class="sheet" id="sheet" aria-live="polite"></div>
+  </div>
+
+  <footer class="note">
+    Written from the repository as it stands, not from an idealised design. Where a decision looks odd, the reason is usually in the Gotchas — most of them were paid for once already.
+  </footer>
+</div>
+
+<script>
+const LAYERS = [
+  { name: "Clients", ids: ["ios","macos","android","vscode","web"] },
+  { name: "Agent core (shared Python)", ids: ["agentpy","registry","router","sdk","mcp"] },
+  { name: "Governance — what the agent may do", ids: ["sdd","watchdog","permissions"] },
+  { name: "Inference", ids: ["providers","edge","localservers"] },
+  { name: "Backend services", ids: ["relay","licensing","pricing","website"] },
+  { name: "Build & release", ids: ["dupes","release"] }
+];
+
+const C = {
+ios: {
+  title: "iOS app — the primary surface",
+  where: "iOS/iCoderAgent/Sources · 128 Swift files · SwiftUI",
+  what: `<p>A terminal, file browser, notebook editor, design canvas and web preview in one app. The agent runs <em>inside</em> it: there is no server doing the work and no round trip to a backend that holds your code.</p>
+  <p>Tabs map to the jobs: <code>Terminal</code> (chat + shell), <code>Preview</code> (WKWebView), <code>Design</code> (SwiftUI mockups from <code>design/*.json</code>), <code>Files</code>, <code>Settings</code>.</p>`,
+  why: `<ul>
+  <li><b>SwiftUI, one tree for two platforms.</b> macOS compiles the same <code>Sources/</code> directory, with roughly fifteen iOS-coupled files gated by <code>#if canImport(UIKit)</code> and a shim file supplying macOS no-ops for iOS-only modifiers. Call sites stay untouched.</li>
+  <li><b>File-based IPC with Python, not a bridge API.</b> Approvals, questions, screenshots and the task list all move through small JSON files under <code>.icoder/</code> that Swift polls while a run streams. Crude, but it works identically whether Python is embedded, a subprocess, or on another machine.</li>
+  <li><b>The phone is the keyboard.</b> Heavy work (builds, large models) is pushed to a connected Mac or a LAN server rather than attempted on the device.</li></ul>`,
+  gotcha: `<p><b>Polling is only live during a run.</b> <code>pollStream()</code> reads those <code>.icoder/</code> files while the agent is streaming. Drop a file in there when no run is active and nothing happens — which looks exactly like a broken feature when you are testing by hand.</p>
+  <p><b>State written during a view update is silently dropped.</b> A <code>UIViewRepresentable</code> that writes its binding from inside <code>updateUIView</code> has the write discarded, and the next pass restores the old value. Symptom: a toolbar whose buttons do nothing. Fix is to apply on the next main-loop turn.</p>`,
+  alt: `<p><b>React Native or Flutter</b> would have given one codebase for iOS and Android at once. Rejected because the app embeds CPython and a C++ inference runtime, drives the iOS Simulator, and leans on platform file pickers — the native-bridge surface would have been most of the app anyway.</p>
+  <p><b>UIKit</b> would avoid the SwiftUI update-pass hazards above, at the cost of the macOS share.</p>`,
+  qs: [
+    ["Why does the Swift side talk to Python through files in <code>.icoder/</code> instead of a function call?",
+     "Because the same protocol has to work across three very different hosts: embedded CPython on iOS, a <strong>subprocess</strong> on macOS, and a machine across the network in remote mode. A direct call binds you to the embedded case. Files are the lowest common denominator, and they survive the process boundary for free."],
+    ["The markdown toolbar's Bold button appears to do nothing. Where do you look first?",
+     "At whether the edit is applied <strong>inside the view-update pass</strong>. Writing to a SwiftUI binding from <code>updateUIView</code>/<code>updateNSView</code> is a state change during an update; SwiftUI can drop it, then the next pass sees the view differs from the (unchanged) state and writes the old value back. Defer with <code>DispatchQueue.main.async</code>."],
+    ["What breaks if you add a new iOS-only SwiftUI modifier to a shared file?",
+     "The macOS target stops compiling, because it builds the same <code>Sources/</code> tree. The convention is to add a no-op shim in <code>Sources-macos/SwiftUICompat.swift</code> rather than fork the call site, so the shared file stays single-source."]
+  ]
+},
+
+macos: {
+  title: "macOS app — same tree, different Python",
+  where: "macOS-app/ · xcodegen · Sources-macos/ shims",
+  what: `<p>A full native Mac app, not a wrapper. It compiles the iOS SwiftUI tree directly (<code>sources:</code> points at <code>../iOS/iCoderAgent/Sources</code>) and adds a small macOS-only shim folder.</p>`,
+  why: `<ul>
+  <li><b>Python as a subprocess, not embedded.</b> <code>PythonBridgeSubprocess.swift</code> launches <code>python3 agent_mac.py</code> and pipes length-prefixed code blocks to it, exposing the identical <code>runString/runFile</code> API. Every call site and the <code>.icoder/</code> file IPC are reused unchanged.</li>
+  <li><b>Real shell.</b> <code>Foundation.Process</code> + <code>/bin/zsh</code>, so the agent can use any toolchain on the Mac — node, go, rust, swift. The phone has no such thing.</li>
+  <li><b>No duplicated resources.</b> It reuses the iOS <code>PythonHome</code>, assets and StoreKit config, so there is nothing extra to keep in sync for macOS.</li></ul>`,
+  gotcha: `<p><b>The in-app Simulator panel is not the Simulator app.</b> When building an iOS-type project on macOS the agent must drive the embedded device panel, not <code>open -a Simulator</code> — there is an explicit prompt rule for this, because the model's instinct is to shell out.</p>
+  <p><b>Mouse events need idb.</b> The embedded panel renders frames but has no input path of its own; taps, typing and drags are injected through <code>idb</code>, and <code>idb ui tap</code> takes <em>device points</em>, not screenshot pixels. Getting that wrong silently taps the wrong place.</p>`,
+  alt: `<p><b>Catalyst</b> would have been less work than a second target, but gives an iPad-shaped app on the desktop and no clean path to a real shell.</p>
+  <p><b>Embedding CPython on macOS too</b> was possible, but the subprocess gets process isolation, a crash that does not take the app with it, and the system Python's full package ecosystem.</p>`,
+  qs: [
+    ["Why is Python embedded on iOS but a subprocess on macOS?",
+     "iOS forbids spawning processes, so embedding is the only option there. On macOS a subprocess is strictly better: isolation, the user's real Python with its packages, and a Python crash that doesn't kill the app. The <code>PythonBridge</code> API is identical on both so nothing above it changes."],
+    ["Someone adds a file to the shared <code>Sources/</code>. What must they remember?",
+     "Re-run <code>xcodegen generate</code> in <strong>both</strong> projects. Both are generated from <code>project.yml</code>, and a new file that exists on disk but not in the regenerated project simply isn't compiled — on whichever platform you forgot."],
+    ["The agent built an iOS app on macOS and launched the external Simulator. Why is that wrong?",
+     "Because the user is in our app and expects the build to appear in its own Devices panel. It's enforced by a prompt rule rather than code, which makes it a <strong>Prompt-rung</strong> fix — worth knowing it is the weakest kind, and that it was chosen because the agent, not the app, decides how to run a build."]
+  ]
+},
+
+android: {
+  title: "Android port",
+  where: "android/ · Kotlin + Compose + Chaquopy",
+  what: `<p>Native Kotlin/Compose reusing the same Python core through Chaquopy, aiming at full iOS parity. Built in a separate worktree, on its own long-running branch.</p>`,
+  why: `<ul>
+  <li><b>Chaquopy over a rewrite.</b> The agent is 17k lines of Python; porting it to Kotlin would have forked the brain of the product in two.</li>
+  <li><b>Python synced at Gradle build time</b> from the repo root rather than committed into <code>android/</code> — one fewer copy to keep in step.</li>
+  <li><b>StoreKit becomes Play Billing</b>, which is the main non-shared surface along with the UI.</li></ul>`,
+  gotcha: `<p><b>Android and iOS are worked in separate sessions on purpose.</b> Cross-working them in one sitting produced merge pain and half-ported features; the rule now is to switch windows rather than context.</p>
+  <p><b>Chaquopy ships native libs that trip the 16 KB page-size warning</b> on newer devices, and the emulator only boots headless with swiftshader on this setup — both cost real debugging time before being written down.</p>`,
+  alt: `<p><b>Kotlin Multiplatform</b> shares logic between Android and iOS, but our shared logic is Python, which KMP cannot host.</p>
+  <p><b>A thin client calling a server</b> would have been far less work — and would have broken the product's central promise that your code never leaves the device.</p>`,
+  qs: [
+    ["Why does the Android app not keep its own copy of the Python core?",
+     "Because duplicated copies drift. The existing duplicates (<code>agent.py</code> and friends) already have to be diffed by hand; adding a third platform's copy multiplies that. Gradle pulls the core from the repo root at build time instead."],
+    ["What is the single largest non-shared surface between the two mobile apps?",
+     "Billing. StoreKit 2 and Play Billing have different models for entitlement and restore, and the quota mirror on the relay has to treat both as counter stores rather than as sources of truth."],
+    ["Why is parity tracked as a phased checklist rather than feature-by-feature?",
+     "Because iOS keeps moving. A phased list in <code>android/PARITY.md</code> with ticked boxes makes the gap measurable at any moment; ad-hoc porting makes it impossible to say how far behind the port actually is."]
+  ]
+},
+
+vscode: {
+  title: "VS Code extension",
+  where: "vscode/ · open PR",
+  what: `<p>Runs the agent against the folder you already have open in the editor, rather than a sandboxed project directory.</p>`,
+  why: `<ul>
+  <li><b>Meets people where the code already is.</b> The mobile app owns its project folder; on a desktop that assumption is wrong and annoying.</li>
+  <li><b>Reuses the same Python core</b> through the same bridge, so tools behave identically to the app.</li></ul>`,
+  gotcha: `<p><b>Workspace trust and the sandbox guard disagree.</b> The agent's <code>_safe()</code> path check assumes a single project root; an editor workspace can have several roots, and the extension has to pick one and be explicit about it.</p>`,
+  alt: `<p><b>A language-server protocol integration</b> would be more idiomatic for an editor, but LSP has no vocabulary for "run this build and look at the screenshot".</p>`,
+  qs: [
+    ["Why not let the extension operate on every folder in a multi-root workspace?",
+     "The sandbox guard confines writes to one project root. Supporting several means either weakening that guard or tracking a root per tool call; the safer choice is one active root, chosen explicitly."],
+    ["What does the extension reuse, and what must it reimplement?",
+     "It reuses the Python core and tool registry wholesale. It reimplements the host side: approvals, the question UI and streaming, which in the apps are the <code>.icoder/</code> file protocol plus SwiftUI."],
+    ["Why is this not simply the CLI in a terminal pane?",
+     "Because the approval and question flows need real UI. A terminal can show the prompt but cannot offer a tappable form, and an agent that writes files without a visible approval path is one people turn off."]
+  ]
+},
+
+web: {
+  title: "Relay-connected companion & remote mode",
+  where: "desktop/ · companion/ · remote_agent.py",
+  what: `<p>A menu-bar companion on a laptop that the phone can drive: builds, tests and shell commands run on the real machine while the phone stays the interface.</p>`,
+  why: `<ul>
+  <li><b>Two ways in:</b> through the relay (no tunnel, works from anywhere you are signed in) or a direct ngrok/Tailscale URL for people who prefer no middleman.</li>
+  <li><b>Same tool surface.</b> <code>MirrorTools</code> delegates each tool to the remote side, so the agent does not know or care where a file write lands.</li></ul>`,
+  gotcha: `<p><b>Every tool added to the local <code>Tools</code> class must also be added to <code>MirrorTools</code></b>, or it silently works locally and fails in remote mode. The delegation is hand-written, not generated.</p>`,
+  alt: `<p><b>SSH only</b> — simpler, and still supported through registered hosts, but it requires the user to configure keys and a reachable host.</p>
+  <p><b>A cloud VM per user</b> (the shape Meta's Muse uses) removes the laptop requirement entirely, and adds hosting cost plus the thing the product exists to avoid: your code on someone else's machine.</p>`,
+  qs: [
+    ["Why does the relay not hold the user's code?",
+     "It is a transport and a counter store, deliberately not an authority and not a repository. Keeping code off it is the product promise; it also keeps the blast radius of a relay compromise small."],
+    ["What happens to a tool call when remote mode is on but the laptop is asleep?",
+     "It fails with a clear 'not connected' result rather than falling back to the phone. A silent fallback would run a build in a place where the toolchain doesn't exist and produce a confusing failure much later."],
+    ["How do you add a new tool so it works in both modes?",
+     "Implement it on <code>Tools</code>, register it in the tool registry, and add the matching delegation to <code>MirrorTools</code>. Missing the third step is the classic bug: it works on your desk and fails for anyone using a companion."]
+  ]
+},
+
+agentpy: {
+  title: "agent.py — the core",
+  where: "agent.py · 17,642 lines · Python 3.9+ stdlib only",
+  what: `<p>Everything the agent is: the turn loop, the model router, the sandboxed tool implementations, usage metering, context truncation, and the governance gates. One file, deliberately.</p>`,
+  why: `<ul>
+  <li><b>Zero third-party dependencies.</b> Not a style preference — it has to import inside sandboxed mobile interpreters (Pyto, a-Shell, Termux) where <code>pip</code> may not exist. Everything is stdlib: <code>urllib</code> for HTTP, <code>json</code>, <code>http.server</code>.</li>
+  <li><b>One file over a package</b> because the file is physically copied into app bundles. Each extra module is another copy to keep in step, and the sync is manual.</li>
+  <li><b>Context truncation keeps the first message and the last twelve</b> (<code>KEEP_TASK_HEAD=1</code>, <code>KEEP_RECENT=12</code>), never splitting a tool_use/tool_result pair — a split pair is an API error, not a degraded answer.</li></ul>`,
+  gotcha: `<p><b>An early <code>return</code> can skip the metering.</b> When tracing was added, a new return path bypassed <code>_note_token_usage</code>, which would have silently blanked the cost HUD whenever tracing was on. Attribute-setting now happens at a single exit point.</p>
+  <p><b>The 120-second HTTP timeout was wrong for local models.</b> A model streaming layers off disk takes minutes; the retry then re-sent the request and made the machine redo the whole generation. Local providers now get 1800s — with the side effect that <em>a dead server looks exactly like a slow one</em>.</p>`,
+  alt: `<p><b>LangChain / LlamaIndex</b> would supply the loop, tool schemas and provider adapters for free. Both are large dependency trees that cannot be installed in the target interpreters, which ends the discussion.</p>
+  <p><b>Splitting into a package</b> is the obvious cleanup and is explicitly deferred: the copies would multiply before the sync problem is solved.</p>`,
+  qs: [
+    ["Justify the zero-dependency rule to someone who thinks it is dogma.",
+     "The agent must import inside interpreters where there is no package manager — that is the product surface, not a preference. The rule also keeps the iOS bundle small and the App Store review surface narrow, since every bundled C extension must ship as a framework."],
+    ["Why must truncation never split a tool_use from its tool_result?",
+     "Because the provider rejects the request outright — an orphaned tool_use is a protocol error, not a quality problem. Truncation therefore has to understand message pairing, which is why it is hand-written rather than a simple tail slice."],
+    ["Where would you add a cross-cutting concern such as audit logging, and why there?",
+     "At <code>execute_tool_call</code>. It is the single choke point every tool call passes through, from the main loop and from sub-agents alike. Anything added at a call site instead will be missed by the paths you forgot about."]
+  ]
+},
+
+registry: {
+  title: "Tool registry & the choke point",
+  where: "agent.py · REGISTRY · execute_tool_call()",
+  what: `<p>57 tools described once as <code>ToolSpec</code>s — name, description, parameters, permission class, examples — and translated into each provider's schema. Every call, from the main loop or a sub-agent, goes through one function.</p>`,
+  why: `<ul>
+  <li><b>One description, many schemas.</b> Claude and the OpenAI-compatible providers want different tool JSON; the registry emits both from the same source so they cannot drift.</li>
+  <li><b>A single choke point is the whole design.</b> The security watchdog, the specification gate, the project lock, the tracing spans and the gate log all hook there. Nothing has to be remembered at a call site.</li>
+  <li><b>Permission classes</b> (<code>auto</code> / <code>write</code> / destructive) drive approval without each tool re-implementing it.</li></ul>`,
+  gotcha: `<p><b>A gate that enumerates the tools it guards will always be missing one.</b> The specification gate originally checked <code>write_file</code> and <code>str_replace</code> — and <code>apply_patch</code>, which creates and deletes files across a whole diff, walked straight past every rule. There is now a single <code>WRITING_TOOLS</code> list, but the design hazard is the pattern, not that one bug.</p>
+  <p><b>Refusals must be traced too.</b> A gate that returns before the span wrapper produces no span, so the most interesting events — the refusals — were invisible in tracing until that was fixed.</p>`,
+  alt: `<p><b>Per-provider tool definitions</b> is what most codebases do, and it drifts the moment someone adds a tool and updates only one schema.</p>
+  <p><b>Decorator-registered tools</b> read more elegantly, but make the full tool list dependent on import order — bad news when the module is loaded by four different hosts.</p>`,
+  qs: [
+    ["A new file-writing tool is added. What must change for governance to keep working?",
+     "It has to be added to <code>WRITING_TOOLS</code>. The gate judges calls by name, so a new authoring tool is invisible to every specification rule until it appears there — which is exactly how <code>apply_patch</code> bypassed the lot."],
+    ["How do you judge a multi-file patch against a rule written for single paths?",
+     "Extract every path the call would write and judge <strong>all</strong> of them. Judging only the first lets an innocent edit carry an undeclared file in behind it; that case has its own regression test."],
+    ["Why are permission classes on the spec rather than inside each tool?",
+     "So approval policy is declarative and auditable in one place. A tool that decides its own approval rules can quietly grant itself more than the user agreed to, and you would have to read 57 implementations to find out."]
+  ]
+},
+
+router: {
+  title: "ModelRouter",
+  where: "agent.py · ModelRouter · 16 providers",
+  what: `<p>One interface over Anthropic, OpenAI-compatible APIs (9 endpoints), Azure, IBM watsonx, Ollama, MLX-LM, AirLLM and on-device inference. Each provider translates the shared tool schema into its native format and normalises the response back to <code>(content, stop_reason, usage)</code>.</p>`,
+  why: `<ul>
+  <li><b>Prompt caching on Claude</b> with up to three <code>cache_control</code> breakpoints — tools block, system prompt, last message — because the system prompt is large and identical every turn.</li>
+  <li><b>Normalised usage</b> so the cost meter and HUD work the same regardless of provider.</li>
+  <li><b>Mid-session provider switching</b>, including re-formatting the message history between Claude's block lists and OpenAI's strings when the user swaps.</li></ul>`,
+  gotcha: `<p><b>The agent's system prompt is roughly 7,500 tokens</b>, sent every turn. A model whose context window is smaller cannot do agent work at all — it does not run slowly, it overflows. A 2k-context model produced <code>7550 &gt; 2048</code> and then ground for minutes returning nothing usable. 16k is the practical floor.</p>
+  <p><b>The OpenAI-compatible payload sends no <code>max_tokens</code> at all</b>, so a local server's own default decides reply length. One server defaulting to 1024 turned a reply into half an hour of work.</p>`,
+  alt: `<p><b>LiteLLM</b> does exactly this job and is well-tested — and is a dependency, which the core cannot have.</p>
+  <p><b>Provider SDKs</b> (anthropic, openai) give typed clients and retries, at the cost of the same dependency rule plus a much larger bundle.</p>`,
+  qs: [
+    ["Why place cache breakpoints on the tools block and the system prompt specifically?",
+     "Because those are the large, byte-identical parts of every request. The cache only helps on an unchanged <strong>prefix</strong>, so breakpoints go at the boundaries of the stable material; putting one after volatile content caches nothing."],
+    ["What single number decides whether a local model can be used at all, and why?",
+     "The context window, against the ~7,500-token system prompt. Below it the request cannot be represented, so no amount of patience or hardware helps. This is a hard gate, unlike speed which is a trade."],
+    ["Switching provider mid-session, what has to be transformed and what breaks if you skip it?",
+     "The message history: Claude uses block lists, OpenAI-compatible APIs use strings, and tool calls are shaped differently in each. Skip the transform and the next request is rejected or, worse, silently drops the tool results."]
+  ]
+},
+
+sdk: {
+  title: "icoder_sdk",
+  where: "icoder_sdk/ · 14 modules · additive layer",
+  what: `<p>A reusable framework layer on top of <code>agent.py</code>: it re-exports the solid primitives under a clean namespace and adds the genuinely new reusable pieces — <code>AgentLoop</code> with pluggable hooks, <code>HookRegistry</code>, <code>PermissionGate</code>, <code>ProjectContext</code>, and <code>Session</code> with resume and fork.</p>`,
+  why: `<ul>
+  <li><b>Additive, never a rewrite.</b> It does not modify or replace <code>agent.py</code>; the app keeps using the core directly, so the SDK cannot break the product.</li>
+  <li><b>It has its own self-test</b> (<code>python3 -m icoder_sdk.selftest</code>), which has repeatedly caught regressions in the core that the app's own tests missed.</li></ul>`,
+  gotcha: `<p><b>An embedder's loop may have no human attached.</b> When the way-of-working question was added to the gate, it blocked every write in the SDK's own loop and hung forever — a question nobody can answer is not a safeguard. There is now a flag that controls <em>asking</em>, never <em>obeying</em>.</p>`,
+  alt: `<p><b>Refactoring <code>agent.py</code> into the SDK</b> is the clean version and would halve the conceptual surface. It is deferred because the core is copied into four runtimes and the refactor would have to land in all of them at once.</p>`,
+  qs: [
+    ["Why is the SDK additive rather than the core being refactored into it?",
+     "Because the core is physically duplicated into app bundles and synced by hand. A refactor has to land in every copy simultaneously or the device runs stale logic — so the cost of being wrong is much higher than in a normal codebase."],
+    ["The SDK's self-test caught a hang nobody else did. What class of bug was it?",
+     "An interactive requirement imposed on a non-interactive host. The gate demanded a user decision in a loop with no user. The lesson generalises: any prompt-for-input added to shared code needs a headless path."],
+    ["What belongs in the SDK and what belongs in agent.py?",
+     "<code>agent.py</code> holds what the product needs to run. The SDK holds what an <strong>embedder</strong> needs: hooks, sessions, permission gates — things our own app doesn't use but a third party would."]
+  ]
+},
+
+mcp: {
+  title: "MCP client",
+  where: "mcp_client.py · 384 lines",
+  what: `<p>Connects Model Context Protocol servers so the agent gains tools it did not ship with — GitHub, docs, hosted tools — exposed as <code>mcp__&lt;alias&gt;__&lt;tool&gt;</code>.</p>`,
+  why: `<ul>
+  <li><b>Namespaced tool names</b> so a third-party server cannot shadow a built-in.</li>
+  <li><b>Both transports:</b> hosted HTTP servers from the phone, and local stdio servers on macOS where a process can actually be spawned.</li></ul>`,
+  gotcha: `<p><b>A local stdio server runs arbitrary code on the user's machine.</b> The app says so plainly at the point of adding one, because the install flow otherwise looks as innocuous as adding a bookmark.</p>
+  <p><b>Tool descriptions from a server are untrusted input</b> that lands in the model's context — a hostile server can attempt instruction injection through them.</p>`,
+  alt: `<p><b>A bespoke plugin API</b> would have given tighter control over what a plugin may do, and no ecosystem. MCP brings existing servers on day one.</p>`,
+  qs: [
+    ["Why namespace MCP tools instead of exposing their plain names?",
+     "To stop a server shadowing a built-in. If a server offers <code>write_file</code>, the model could route a write through it, past the sandbox guard and every gate. The prefix makes shadowing impossible."],
+    ["Where does untrusted text from an MCP server reach the model?",
+     "In the tool descriptions and the tool results, both of which sit in the prompt. Both must be treated as data, never as instructions — the same rule applied to web pages and file contents."],
+    ["Why is stdio only available on macOS?",
+     "iOS cannot spawn processes. It is a platform limit, not a policy choice, and it is the reason the macOS build gained local MCP support first."]
+  ]
+},
+
+sdd: {
+  title: "Spec-driven development gate",
+  where: "agent.py · goal_spec_block() · spec_templates.py",
+  what: `<p>A per-project choice between <b>vibe coding</b> (describe it, the agent builds it) and <b>spec-driven development</b>, where the agent interviews the user, writes the specification in their words, and is then held to it. Asked once, recorded in the project folder, and not switchable mid-build.</p>
+  <p>In SDD mode the gate refuses any file write that is not backed by the specification: on the agreed file list, in an agreed folder, and answering an open task that cites a requirement.</p>`,
+  why: `<ul>
+  <li><b>Gates, not instructions.</b> Each of the five phases is enforced where it lives rather than asked for in the prompt — a prompt rule cannot win against the path of least resistance.</li>
+  <li><b>The user writes the spec, the agent enhances it.</b> An agent that drafts the specification and asks for a nod has simply moved its own guess into a document.</li>
+  <li><b>Verification runs.</b> <code>done_mark</code> takes a proof command, <em>executes it</em>, and refuses the tick when it fails. Items checked by eye are recorded as inspected, not proven, and counted separately.</li>
+  <li><b>Fix the spec, not the code.</b> A proof failing twice on the same specification blocks further code until the spec changes <em>and</em> the user has been asked.</li></ul>`,
+  gotcha: `<p><b>Numbering an acceptance criterion switched off the check on it.</b> The verifiability test looked for a digit as evidence of measurability — and "1." is a digit. Since the template asks for numbered criteria, the guidance disabled the rule, and the check only worked on specs that ignored the instructions.</p>
+  <p><b>Anchoring on the project root was wrong.</b> An app built in a subfolder kept its specs there; the gate looked at the root, found none, saw a folder with files in it, concluded this was established work, and switched every rule off.</p>`,
+  alt: `<p><b>Prompt-only SDD</b> is what most agents ship, and is why most agents drift from the plan: instruction-following degrades, gates do not.</p>
+  <p><b>A hosted spec service</b> would give review and history, and would put the user's requirements on someone else's server.</p>`,
+  qs: [
+    ["A new feature is requested on a finished build. What stops the agent just writing the code?",
+     "Every task is ticked, so there is no open work item — and the gate refuses code when nothing is open. The way out is to add a task, and a task citing no requirement is refused too, so the <strong>specification</strong> is what has to be written first. That chain enforces the order without the gate understanding the request."],
+    ["How do you mechanically tell a verifiable acceptance criterion from a wish?",
+     "You can't, in general — so the check is deliberately narrow: flag an item only when it reads as a judgement <em>and</em> offers nothing measurable. 'Loads fast — under 200ms on 3G' passes, because refusing it would teach people to game the wording rather than write better criteria."],
+    ["Why can't the user switch a project from spec-driven back to vibe?",
+     "Because the specification is the control surface the agent's autonomy rests on. Flipping it mid-build hands back every gate at once, on a build that is only running unattended <em>because</em> those gates are there. Switching means starting a new project — a deliberate act rather than a stray tap."]
+  ]
+},
+
+watchdog: {
+  title: "Security watchdog",
+  where: "agent.py · security_scan() · 8 rules",
+  what: `<p>A write-time scan on every file the agent produces: hard-coded credentials, AWS keys, private keys, unsafe shell patterns. Warn-only — it annotates the tool result rather than blocking.</p>`,
+  why: `<ul>
+  <li><b>At write time, not review time.</b> A secret caught as it is written is a one-line fix; the same secret found in review is already in the history.</li>
+  <li><b>Warn rather than block</b> because a false positive that stops work is how a security feature gets switched off.</li>
+  <li><b>It annotates the model's own tool result</b>, so the agent sees the warning and usually fixes it unprompted.</li></ul>`,
+  gotcha: `<p><b>The rules are regular expressions, so the false-positive rate is the whole design.</b> They were tuned against real files and the rate measured — a detector nobody trusts is worse than none, because it trains people to ignore it.</p>
+  <p><b>Test fixtures lie convincingly.</b> An AWS key pattern needs the right length (16 characters after <code>AKIA</code>, not 15) or the test passes against a string the real rule would reject.</p>`,
+  alt: `<p><b>gitleaks or trufflehog</b> are far better detectors — and are dependencies, and run over a repository rather than at the moment of writing.</p>
+  <p><b>Blocking instead of warning</b> was considered and rejected: it makes every false positive a hard stop.</p>`,
+  qs: [
+    ["Why warn rather than block on a detected secret?",
+     "Because the rules are regexes with a real false-positive rate. Blocking turns every false positive into a hard stop, and the predictable result is the feature being disabled — after which it catches nothing at all."],
+    ["Why scan at write time rather than scanning the repository?",
+     "Because the agent is the one writing, and the cheapest moment to fix a leaked key is before it exists on disk. A repo scan finds it after it is already in history, where removing it is a different and much larger job."],
+    ["How would you decide whether a new rule is worth adding?",
+     "Measure its false-positive rate against real project files first. A rule that fires on ordinary code costs more trust than the leak it might catch — the metric is precision, not coverage."]
+  ]
+},
+
+permissions: {
+  title: "Approvals, sandbox & project lock",
+  where: "agent.py · _safe() · claim_project() · permission classes",
+  what: `<p>Three layers: a path-escape guard confining writes to the project, permission classes that decide what needs the user's approval, and a project lock that stops two sessions building in the same folder.</p>`,
+  why: `<ul>
+  <li><b><code>_safe()</code> on every path</b>, so a traversal in a model-produced filename cannot reach outside the sandbox.</li>
+  <li><b>The lock is stale after 15 minutes</b> (<code>LOCK_STALE_SECONDS=900</code>) so a crashed session does not leave a project permanently locked.</li>
+  <li><b>Approval is a file round-trip</b> through <code>.icoder/</code>, which means the same flow works in remote mode.</li></ul>`,
+  gotcha: `<p><b>A sanitiser that allows <code>..</code> is not a sanitiser.</b> The worktree name cleaner let <code>../..</code> through and had to be tightened to an explicit <code>[A-Za-z0-9_-]</code> allow-list with collapsed dashes.</p>
+  <p><b>Guard the guard.</b> A lock-path helper called outside its own <code>try</code> let an exception from a malformed tools object propagate through the write path — caught by a self-test, not by review.</p>`,
+  alt: `<p><b>OS-level sandboxing</b> (seatbelt, containers) is stronger than path checks and unavailable inside an iOS app process.</p>
+  <p><b>Approving every write</b> is safer and unusable; the permission classes exist to keep approval for the things that deserve it.</p>`,
+  qs: [
+    ["Why is a path allow-list better than blocking <code>..</code>?",
+     "Because the ways to express traversal are open-ended — encodings, symlinks, absolute paths, Unicode lookalikes. An allow-list of permitted characters has a closed definition of success, which is the only kind you can reason about."],
+    ["Why does the project lock expire?",
+     "So a crash doesn't leave a project permanently unusable. The trade is a 15-minute window in which two sessions could overlap, which is far less bad than a lock that needs manual clearing."],
+    ["Why does approval go through a file rather than a callback?",
+     "Because the same mechanism must work when Python is embedded, a subprocess, or on another machine. A callback binds to the embedded case; a file round-trip works across all three unchanged."]
+  ]
+},
+
+providers: {
+  title: "Model providers & BYOK",
+  where: "SettingsStore.swift · 16 providers · Keychain",
+  what: `<p>Bring your own key. Sixteen providers, keys stored in the Keychain scoped per account, and per-model pricing shown in Settings so cost is visible before a run rather than after.</p>`,
+  why: `<ul>
+  <li><b>BYOK over reselling tokens.</b> The user pays the provider directly; we never see the key or mark up inference. That removes an entire class of billing, abuse and margin problems.</li>
+  <li><b>Keychain, scoped per account</b> via <code>AccountScope</code> — new per-account storage must route through it rather than standard <code>UserDefaults</code>.</li>
+  <li><b>A link to each provider's console</b> where the key field is, because fourteen providers means fourteen different places to find one.</li></ul>`,
+  gotcha: `<p><b>Image generation needs a specific provider's key</b> regardless of which provider you are chatting with, so OpenAI and xAI keys are passed through even when inactive. Non-obvious, and the kind of thing that looks like a bug when a feature fails on Claude.</p>
+  <p><b>Prices go stale.</b> They are fetched from a public pricing repo at launch rather than compiled in, so a price change does not need an App Store release.</p>`,
+  alt: `<p><b>Selling inference</b> is the standard model and a better business — it also means holding keys, handling abuse, and being the one who is billed when someone loops an agent overnight.</p>
+  <p><b>A single provider</b> would simplify everything and tie the product to one vendor's pricing, availability and policy.</p>`,
+  qs: [
+    ["What does BYOK remove from the threat model, and what does it add?",
+     "It removes holding other people's credentials and being the billing path for abuse. It adds a support surface — fourteen consoles, fourteen key formats — and the risk of a key being pasted somewhere it shouldn't be, which is why it goes straight to the Keychain and is never echoed."],
+    ["Why fetch pricing from a repository at launch instead of compiling it in?",
+     "Because providers change prices more often than we ship. A compiled table would mean the cost shown is wrong until the next App Store review clears, and cost displayed wrongly is worse than not displayed."],
+    ["A user reports image generation failing while chat works. First hypothesis?",
+     "They are chatting with a provider that cannot generate images, and have no OpenAI or xAI key saved. Those keys are passed through independently of the active provider precisely because of this, so the missing one is the likely cause."]
+  ]
+},
+
+edge: {
+  title: "On-device inference",
+  where: "Sources/Edge/ · LiteRT-LM · llama.cpp · EdgeServer",
+  what: `<p>Models running entirely on the phone — Gemma through LiteRT-LM, GGUF models through llama.cpp — served to the agent over an in-app loopback so the rest of the system treats them as just another provider.</p>`,
+  why: `<ul>
+  <li><b>A loopback server, not a special code path.</b> <code>EdgeServer</code> speaks the same OpenAI-compatible shape, so the router, tools and metering need no on-device branch.</li>
+  <li><b>Native function-calling</b> where the model supports it, driven from Swift, with tools bridged back into Python via <code>exec_tool</code>.</li>
+  <li><b>A JSON coaxing layer</b> for models never trained to call tools, which emit a tool-shaped object instead.</li></ul>`,
+  gotcha: `<p><b>Models are never bundled in the IPA</b> — they download in-app to <code>Documents/models/</code>. Setting <code>optional: true</code> on a resource in <code>project.yml</code> does <em>not</em> keep it out of the build; it only means "don't fail if absent". A 657 MB Gemma file shipped in an archive that way once.</p>
+  <p><b>Small models can't do agent work</b> for the same context reason as any other provider, and the 1–2B models need their KV window trimmed or decoding simply fails.</p>`,
+  alt: `<p><b>Core ML</b> is the platform-native path with better tooling, and far fewer current LLM conversions than GGUF.</p>
+  <p><b>MLX on-device</b> is excellent on Apple Silicon Macs but is not available to an iOS app process in the same way.</p>`,
+  qs: [
+    ["Why serve the on-device model over a loopback instead of calling it directly?",
+     "So it is indistinguishable from a remote provider to everything above it — router, tools, usage metering, truncation. A direct call would need an on-device branch in each of those, and every future change would have to remember it."],
+    ["<code>optional: true</code> on a model resource — what does it actually do?",
+     "It means the build doesn't fail when the file is absent. It does <strong>not</strong> exclude the file: whenever it exists locally, it is bundled. That misreading shipped a ~700 MB IPA."],
+    ["Why is a 1B on-device model fine for chat and useless for the agent?",
+     "The agent's system prompt is ~7,500 tokens before the conversation starts. Chat sends a short prompt; agent work sends the whole tool surface every turn, which a small context window cannot hold."]
+  ]
+},
+
+localservers: {
+  title: "Local model servers",
+  where: "Ollama · MLX-LM · AirLLM · scripts/airllm_server.py",
+  what: `<p>Three ways to point the app at a model on your own hardware over the LAN: Ollama anywhere, Apple MLX-LM on Apple Silicon, and AirLLM for running a model far larger than the GPU should hold.</p>`,
+  why: `<ul>
+  <li><b>All three are just a base URL.</b> They reuse the OpenAI-compatible path, so supporting a new one is a provider case and a settings field.</li>
+  <li><b>AirLLM has no server of its own</b>, so the repo ships one: a stdlib HTTP wrapper that runs in the user's environment, keeping torch as their dependency rather than the core's.</li></ul>`,
+  gotcha: `<p><b>Prompt caching is worth fifty times the speed.</b> The agent resends an identical prefix every turn; with MLX-LM's cache the first reply took 21.0s and the next 0.4s. Without it, a local model feels broken rather than slow.</p>
+  <p><b>AirLLM's macOS API is not its CUDA API</b> — a different class that takes an MLX array and returns a decoded string. Code written against the Hugging Face shape crashes on the only machine most people can test on.</p>
+  <p><b>Measured on an M4: 1.6 seconds per token.</b> AirLLM earns its place on a CUDA box where the model would not otherwise fit at all; on a Mac, MLX-LM is better by a wide margin.</p>`,
+  alt: `<p><b>vLLM or TGI</b> are the serious self-hosting answers — heavier to set up, and aimed at a server rather than someone's laptop.</p>
+  <p><b>Requiring Ollama only</b> would have been simpler and would have excluded Apple Silicon's fastest path.</p>`,
+  qs: [
+    ["A user says the local model is unusably slow. What do you check first?",
+     "Whether the server has prompt caching on. The agent's prefix is identical every turn, so without a cache the server reprocesses thousands of tokens each time. It is a 50× difference and nobody guesses it from the symptom."],
+    ["Why does the wrapper refuse streaming rather than emulating it?",
+     "Because that backend generates in one pass. A token animation over a long silence is a lie about what is happening, and it would hide the fact that the request may be minutes from finishing."],
+    ["The app hangs against a local server. Why is that harder to diagnose than against a hosted one?",
+     "Local providers get a 30-minute timeout so genuinely slow models can finish — which means a <strong>dead</strong> server looks exactly like a slow one. The app waits instead of failing, so the first check is whether anything is listening at all."]
+  ]
+},
+
+relay: {
+  title: "Relay service",
+  where: "relay/relay_server.py · managed container service",
+  what: `<p>Accounts, device pairing, and the quota mirror. It connects a phone to a laptop without a tunnel, and keeps conversation counters that survive reinstalls and span devices.</p>`,
+  why: `<ul>
+  <li><b>A counter store, not an entitlement authority.</b> Entitlement comes from StoreKit; the relay only mirrors counts. That distinction keeps a relay outage from locking people out of what they paid for.</li>
+  <li><b>Last-write-by-revision.</b> If the mirror is unreachable the app keeps working on its local count rather than refusing to run.</li>
+  <li><b>Accounts in a managed key-value store</b>, with bounce and complaint handling on the mail side.</li></ul>`,
+  gotcha: `<p><b>Pushing an image is not deploying it.</b> Updating the service definition does not re-pull a <code>:latest</code> tag, so a push on its own leaves the old container running and looks like a deploy that did nothing.</p>
+  <p><b>Match the host's architecture</b> when building on an Apple Silicon machine, or the container will not start.</p>
+  <p><b>Bounce handling has two similar-looking event shapes</b>, and subscribing to the wrong one silently delivers nothing.</p>`,
+  alt: `<p><b>A direct tunnel only</b> (ngrok, Tailscale) is still supported and needs no service at all — at the cost of asking every user to set one up.</p>
+  <p><b>Making the relay the entitlement authority</b> would centralise billing logic and make an outage into a paywall for paying customers.</p>`,
+  qs: [
+    ["Why is the relay deliberately not the entitlement authority?",
+     "Because an outage would then lock paying users out. StoreKit already holds the receipt; the relay mirrors counters so they survive a reinstall. Availability requirements for a convenience and for an entitlement are very different."],
+    ["What does fail-open mean here, and what does it cost?",
+     "If the mirror is unreachable the app trusts its local count and carries on, rather than blocking honest users during an outage. The trade is that availability is chosen over strictness at exactly the moment the counter cannot be confirmed."],
+    ["A new image is pushed but behaviour doesn't change. First hypothesis?",
+     "The deployment was never triggered — updating a service definition does not re-pull a moving tag. The second hypothesis is an image built for the wrong architecture failing to start."]
+  ]
+},
+
+licensing: {
+  title: "Licensing & billing",
+  where: "serverless function · key-value store · two payment processors",
+  what: `<p>Website purchases issue licence keys through a serverless function behind an API gateway, with a key-value store holding licences. Two payment processors, each with their own webhook.</p>`,
+  why: `<ul>
+  <li><b>Webhook-driven issuance</b> so a licence exists the moment payment clears, without a human step.</li>
+  <li><b>Self-serve cancellation</b> on the website, routed to whichever processor owns the subscription.</li>
+  <li><b>Separate from StoreKit.</b> App Store purchases never touch this path; it exists for the direct-download macOS history and website plans.</li></ul>`,
+  gotcha: `<p><b>Some processors deliver webhooks account-wide.</b> Where an account serves more than one product, the endpoint receives events that are not ours and must ignore unknown plan IDs rather than erroring on them.</p>
+  <p><b>Webhook secrets are compared by fingerprint, never printed.</b> Verifying a rotation means comparing SHA-256 hashes, not echoing the value.</p>`,
+  alt: `<p><b>A single processor</b> would be simpler; the second one exists to serve a market the first does not cover well.</p>
+  <p><b>App Store only</b> removes this entire subsystem and takes 15–30% plus the loss of a web purchase path.</p>`,
+  qs: [
+    ["Why must the webhook handler ignore unknown plan IDs rather than erroring?",
+     "The webhook is account-wide, so events for another product are normal traffic. Erroring on them produces noise and can cause the processor to disable the endpoint entirely — at which point real purchases stop being delivered."],
+    ["How do you verify a rotated webhook secret without exposing it?",
+     "Compare SHA-256 fingerprints of the stored and configured values, or write to a 0600 scratch file. Echoing a secret to a terminal puts it in scrollback, history and any log capture."],
+    ["Why do App Store purchases bypass this system entirely?",
+     "Apple is the merchant of record there; the receipt is the entitlement and introducing a second source of truth would create states where the two disagree. The Lambda path exists for web purchases only."]
+  ]
+},
+
+pricing: {
+  title: "Pricing data",
+  where: "public iCoderAgent-pricing repo · fetched at launch",
+  what: `<p>Per-model token prices live in a public repository and are fetched when the app launches, with a compiled-in table as the fallback.</p>`,
+  why: `<ul>
+  <li><b>Prices change without a release.</b> Editing one JSON file updates every installed app, which matters because a wrong price is shown as a dollar figure next to a real spend.</li>
+  <li><b>Public on purpose</b> — there is nothing secret in it, and being public means no auth path to maintain.</li></ul>`,
+  gotcha: `<p><b>Models with no known price still work</b>, with the cost approximated and labelled as an estimate. Failing a run because a price is missing would be absurd.</p>`,
+  alt: `<p><b>Compiled-in prices</b> need an App Store review to correct. <b>A pricing API</b> adds a service to run for data that changes a few times a year.</p>`,
+  qs: [
+    ["Why is a stale price worse than a missing one?",
+     "Because it is shown as a specific figure next to real spending, so the user trusts it. A missing price is labelled an estimate and sets expectations correctly."],
+    ["Why a git repository instead of an endpoint?",
+     "No service to run or secure, free hosting, an audit trail of every change, and rollback for nothing. The data changes a few times a year — an API would be infrastructure for its own sake."],
+    ["What happens when the fetch fails at launch?",
+     "The compiled-in table is used. The app must never block on pricing data, which is a display concern rather than a functional one."]
+  ]
+},
+
+website: {
+  title: "Website & docs",
+  where: "static hosting behind a CDN · no build step",
+  what: `<p>Plain HTML, CSS and JS — no build step. Served as static files behind a CDN, with the docs page carrying the full user-facing manual.</p>`,
+  why: `<ul>
+  <li><b>No build step at all</b>, so a docs change is an edit and an upload. Nothing to break between writing and publishing.</li>
+  <li><b>Every page one click from home</b>, with a sitemap that matches — a deliberate correction after feature pages existed but were unreachable.</li></ul>`,
+  gotcha: `<p><b>Never run a mirroring sync with deletion against shared storage.</b> Two publishers write into the same place, and a sync from one checkout has no knowledge of the other's files, so deletion treats them as removed. Versioning covers the mistake now; the rule stands.</p>
+  <p><b>Deploying is manual.</b> Merging a docs change does nothing until someone uploads — worth knowing before telling anyone the documentation is live.</p>
+  <p><b><code>apple-app-site-association</code> needs an explicit content type</b> after any upload, or iOS refuses to read it and universal links break silently.</p>`,
+  alt: `<p><b>A static site generator</b> would give templating and reuse, and add a build step to a site whose whole virtue is not having one.</p>
+  <p><b>Amplify or Netlify</b> would give deploy-on-merge, which this repo genuinely lacks.</p>`,
+  qs: [
+    ["Why is a deleting sync specifically dangerous against this storage?",
+     "Because it has two publishers: the site itself and a release job that writes the downloads. A sync from one local checkout has no knowledge of the other's files, so deletion treats every one of them as removed."],
+    ["Merging a docs change doesn't update the site. Why not?",
+     "Publishing is a manual upload plus a CDN invalidation — there is no deploy-on-merge. Worth knowing before telling anyone the documentation is live."],
+    ["How do you verify a deploy actually landed?",
+     "Compare the SHA-256 of the served bytes against the local file after the CDN invalidation completes. A 200 response proves something is being served, not that it is your version."]
+  ]
+},
+
+dupes: {
+  title: "Duplicated Python — the sync hazard",
+  where: "agent.py · mcp_client.py · remote_agent.py · project_templates.py · spec_templates.py · icoder_sdk/",
+  what: `<p>Several Python sources exist as physical copies: one at the repo root, one inside the iOS bundle's <code>PythonHome</code>, one in the desktop companion's resources. They are committed duplicates and there is <em>no build-time sync</em>.</p>`,
+  why: `<ul>
+  <li><b>Each runtime loads from a different place.</b> The iOS app imports the <em>bundled</em> <code>agent.py</code>, not the repo-root one.</li>
+  <li><b>A build phase force-copies</b> the bundled sources, because a stale folder-reference resource silently shipped old logic more than once.</li>
+  <li><b>A build marker is printed at startup</b> so the logs prove which copy the device is actually running.</li></ul>`,
+  gotcha: `<p><b>Edit one and forget the others and the app ships stale logic</b> — a new tool that never reaches the phone, with no error anywhere. The only defence is a <code>diff</code> checklist in <code>CLAUDE.md</code>, run by hand.</p>
+  <p><b><code>docs/</code> is in <code>.gitignore</code>.</b> Existing docs are tracked only because they predate the rule, so a new document added with <code>git add -A</code> is skipped in silence — and a PR can ship a link to a file that was never committed.</p>`,
+  alt: `<p><b>A build-time copy from a single source</b> is the obvious fix and is explicitly deferred in the repo's own notes. It is the highest-value cleanup available.</p>
+  <p><b>A git submodule or a package</b> would work for the companion, and not for an app bundle that needs the file physically present.</p>`,
+  qs: [
+    ["A new agent tool works in the CLI but not on the phone. Most likely cause?",
+     "The bundled copy under <code>iOS/.../PythonHome/lib/python3.12/</code> was not updated. The app imports that file, not the repo root. The build marker in the launch log tells you which copy is actually running."],
+    ["Why is this duplication tolerated rather than fixed?",
+     "Because each runtime loads from a different location and an app bundle needs the file physically present. The fix — a build-time copy from one source — is acknowledged as the right answer and deferred, which is a debt to state openly rather than defend."],
+    ["What class of bug does an ignored directory create?",
+     "Silent omission. <code>git add -A</code> reports success, the commit succeeds, and the file simply isn't there. The same class as an unasserted string replacement that matches nothing — a command that reports success while doing nothing."]
+  ]
+},
+
+release: {
+  title: "Build & release",
+  where: "scripts/ios-deploy.sh · xcodegen · GitHub Actions · App Store Connect",
+  what: `<p>iOS builds install to a connected iPhone without Xcode; macOS releases are cut by pushing a tag; the version bump lives in a single long-lived PR.</p>`,
+  why: `<ul>
+  <li><b>One parked bump PR.</b> The iOS version bump lives in exactly one PR until release, so two competing bumps can never both be open.</li>
+  <li><b>macOS release is a tag push.</b> CI sets and verifies the version and refuses a non-increasing one — the tag <em>is</em> the version, and hand-editing it is how you get a mismatch.</li>
+  <li><b>App Store uploads are done by a human</b>, deliberately. Automation stops at the Release archive.</li></ul>`,
+  gotcha: `<p><b>Verify the <code>associated-domains</code> entitlement in the signed archive</b>, not in the project file — <code>codesign -d --entitlements :-</code>. A project setting that doesn't survive signing breaks universal links for a whole release, and this check has caught it.</p>
+  <p><b>Python C extensions must ship as frameworks</b>, with both a build phase and the bridge's finder agreeing. Remove either and the upload is rejected.</p>
+  <p><b>A false-positive string match in a bundled dependency</b> once caused an App Store rejection under guideline 2.5.2 — for a string inside <code>werkzeug</code>, not our code. The patch has to be re-applied whenever that dependency is upgraded.</p>`,
+  alt: `<p><b>Fastlane</b> is the standard answer and would replace several scripts; it is also another dependency chain to maintain for a solo release cadence.</p>
+  <p><b>Fully automated upload</b> is possible and deliberately not done: a human looks at the build before it reaches review.</p>`,
+  qs: [
+    ["Why check entitlements in the archive rather than the project?",
+     "Because signing is what actually decides them. A project setting that doesn't make it through signing produces an app whose universal links silently fail, and you only find out from users after release."],
+    ["Why only ever one open version-bump PR?",
+     "Two competing bumps produce conflicting build numbers and a merge that silently picks one. Keeping a single parked PR makes the next version a single, conflict-free object."],
+    ["A dependency upgrade causes an App Store rejection for a string you didn't write. What's the process lesson?",
+     "Your review surface includes everything you bundle, not only your code. The patch has to be re-applied on every upgrade of that dependency, which means it belongs in the upgrade checklist rather than in someone's memory."]
+  ]
+}
+};
+
+const map = document.getElementById("map");
+const sheet = document.getElementById("sheet");
+
+LAYERS.forEach(layer => {
+  const sec = document.createElement("div");
+  sec.className = "layer";
+  const h = document.createElement("div");
+  h.className = "layer-head";
+  h.innerHTML = "<span>" + layer.name + "</span>";
+  sec.appendChild(h);
+  const nodes = document.createElement("div");
+  nodes.className = "nodes";
+  layer.ids.forEach(id => {
+    const c = C[id];
+    if (!c) return;
+    const b = document.createElement("button");
+    b.className = "node";
+    b.type = "button";
+    b.id = "node-" + id;
+    b.setAttribute("aria-pressed", "false");
+    const name = c.title.split("—")[0].trim();
+    b.innerHTML = name + '<span class="tag">' + c.where.split("·")[0].trim() + "</span>";
+    b.addEventListener("click", () => select(id));
+    nodes.appendChild(b);
+  });
+  sec.appendChild(nodes);
+  map.appendChild(sec);
+});
+
+function select(id) {
+  const c = C[id];
+  if (!c) return;
+  document.querySelectorAll("button.node").forEach(b =>
+    b.setAttribute("aria-pressed", b.id === "node-" + id ? "true" : "false"));
+
+  const qs = c.qs.map(([q, a]) =>
+    '<details class="q"><summary>' + q + '</summary><div class="ans">' + a + "</div></details>").join("");
+
+  sheet.innerHTML =
+    "<h2>" + c.title + "</h2>" +
+    '<p class="where">' + c.where + "</p>" +
+    "<h3>What it is</h3>" + c.what +
+    "<h3>Why it is built this way</h3>" + c.why +
+    "<h3>Gotchas</h3>" + '<div class="gotcha">' + c.gotcha + "</div>" +
+    "<h3>What else could have been used</h3>" + '<div class="alt">' + c.alt + "</div>" +
+    "<h3>Three questions you should be able to answer</h3>" + '<div class="qs">' + qs + "</div>";
+  sheet.scrollTop = 0;
+}
+
+select("agentpy");
+</script>
+
+</body></html>
